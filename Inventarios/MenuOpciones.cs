@@ -53,6 +53,7 @@ namespace Inventarios
                 conexion.Open();
 
                 EstadoResultado estadoResultado = new EstadoResultado();
+                // nuevas
                 double compras = 0;
                 double ventas = 0;
 
