@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -45,16 +46,53 @@ namespace Inventarios
 
         private void btnER_Click(object sender, EventArgs e)
         {
+
+                SqlConnection conexion = new SqlConnection("server=GoGui\\GOGUI; database=Feria ; integrated security = true; user=sa; password=123456");
             try
             {
+                conexion.Open();
+
                 EstadoResultado estadoResultado = new EstadoResultado();
-       
-                if (controlVentas!=null)
+                double compras = 0;
+                double ventas = 0;
+
+                string cadena = "select sum(TotalCompras) as total from Compras";
+                string cventa = "select sum(TotalVentas) as total from Ventas";
+                SqlCommand comando = new SqlCommand(cadena, conexion);
+
+                SqlDataReader reader = comando.ExecuteReader();
+
+                if (reader.Read())
                 {
-                    if (inventario!=null)
+                    // Aquí puedes acceder a los datos del registro
+                    compras = Convert.ToDouble(reader["total"]);
+                    // ... y así sucesivamente
+
+                    // Cierra el lector cuando hayas terminado de usarlo
+                    reader.Close();
+                }
+
+                comando = new SqlCommand(cventa, conexion);
+
+                reader = comando.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    // Aquí puedes acceder a los datos del registro
+                    ventas = Convert.ToDouble(reader["total"]);
+                    // ... y así sucesivamente
+
+                    // Cierra el lector cuando hayas terminado de usarlo
+                    reader.Close();
+                }
+
+                if (ventas!=null)
+                {
+                    if (compras!=null)
                     {
-                        estadoResultado.setVentasTotales(controlVentas.getContador());
-                        estadoResultado.setCT(inventario.getContador());
+
+                        estadoResultado.setVentasTotales(ventas);
+                        estadoResultado.setCT(compras);
                        
                         estadoResultado.Show();
                     }
@@ -67,6 +105,11 @@ namespace Inventarios
             {
 
                 MessageBox.Show("Tiene que registrar las compras y ventas");
+            }
+            finally {
+                
+                // cerramos conexion
+                conexion.Close();
             }
             
             /*this.Hide();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,15 @@ namespace Inventarios
         { return contador; }
         private void btnSave_Click(object sender, EventArgs e)
         {
-            contador=0.0;
+            SqlConnection conexion = new SqlConnection("server=GoGui\\GOGUI; database=Feria ; integrated security = true; user=sa; password=123456");
+            //conexion.Open();
+            //MessageBox.Show("Se abrió la conexión con el servidor SQL Server y se seleccionó la base de datos");
+            //conexion.Close();
+            //MessageBox.Show("Se cerró la conexión.");
+            // abrimos conexion
+            conexion.Open();
+
+            contador =0.0;
             foreach (DataGridViewRow row in dataVentas.Rows)
             {
                 decimal valorfila = 0;
@@ -56,6 +65,11 @@ namespace Inventarios
             }
             txtVentasT.Text=contador.ToString();
 
+            string cadena = "insert into Ventas(TotalVentas) values (" + contador + ")";
+            SqlCommand comando = new SqlCommand(cadena, conexion);
+            comando.ExecuteNonQuery();
+            // cerramos conexion
+            conexion.Close();
         }
 
         private void txtProducto_KeyPress(object sender, KeyPressEventArgs e)

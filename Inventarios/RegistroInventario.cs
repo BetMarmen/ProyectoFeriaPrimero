@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -88,7 +89,16 @@ namespace Inventarios
         { return contador1; }
         private void btnSave_Click(object sender, EventArgs e)
         {
-            contador1=0.0;
+
+            SqlConnection conexion = new SqlConnection("server=GoGui\\GOGUI; database=Feria ; integrated security = true; user=sa; password=123456");
+            //conexion.Open();
+            //MessageBox.Show("Se abrió la conexión con el servidor SQL Server y se seleccionó la base de datos");
+            //conexion.Close();
+            //MessageBox.Show("Se cerró la conexión.");
+            // abrimos conexion
+            conexion.Open();
+
+            contador1 =0.0;
             foreach (DataGridViewRow row in dataInventario.Rows)
             {
                 double? precioExistente = row.Cells[3].Value as double?;
@@ -98,6 +108,12 @@ namespace Inventarios
                 }
             }
             txtComprasT.Text=contador1.ToString();
+
+            string cadena = "insert into Compras(TotalCompras) values (" + contador1 + ")";
+            SqlCommand comando = new SqlCommand(cadena, conexion);
+            comando.ExecuteNonQuery();
+            // cerramos conexion
+            conexion.Close();
         }
 
         private void txtProducto_KeyPress(object sender, KeyPressEventArgs e)
